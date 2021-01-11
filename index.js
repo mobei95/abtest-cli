@@ -1,6 +1,7 @@
 #! /usr/bin/env node
 const { program } = require('commander')
 const download = require('download-git-repo')
+const clone = require('git-clone')
 const { chooseTemplate } = require('./inquiries')
 const templateMap = require('./templateMap')
 
@@ -20,6 +21,7 @@ function start() {
       }
 
       const downloadUrl = templateMap.get(template)
+      // clone()
       download(downloadUrl, projectName, {clone:true}, error => {
         if (error) {
           console.log('项目创建失败', error)
