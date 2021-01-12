@@ -1,9 +1,10 @@
 #! /usr/bin/env node
 const { program } = require('commander')
 const download = require('download-git-repo')
-const clone = require('git-clone')
-const { chooseTemplate } = require('./inquiries')
+const ora = require('ora')
+const chalk = require('chalk')
 const templateMap = require('./templateMap')
+const { chooseTemplate } = require('./inquiries')
 
 function start() {
   console.log('start')
@@ -11,26 +12,38 @@ function start() {
 
   program
     .command('create <projectName>')
+    .alias('c')
     .description('创建项目模板')
     .option("-T, --template [template]", "输入使用的模板名字")
     .action(async function(projectName, options) {
+      console.log('options', options)
       let template = options.template
 
       if (!template) {
         template = await chooseTemplate()
       }
 
-      const downloadUrl = templateMap.get(template)
-      // clone()
-      download(downloadUrl, projectName, {clone:true}, error => {
-        if (error) {
-          console.log('项目创建失败', error)
-        } else {
-          console.log('创建成功')
+      // 下载中的loading
+      const spinner = ora({
+        text: '模板下载中',
+        color: 'yellow',
+        spinner: {
+          interval: 80,
+          frames: ["⠋", "⠙", "⠹", "⠸", "⠼", "⠴", "⠦", "⠧", "⠇", "⠏"]
         }
       })
+      spinner.start()
 
-      console.log('创建流程', projectName, template)
+      // 获取到模板地址并开始下载
+      const downloadUrl = templateMap.get(template)
+      download(downloadUrl, projectName, {clone:true}, error => {
+        if (error) {
+          spinner.fail(`项目创建失败： ${projectName}`)
+          console.log('失败原因', error)
+        } else {
+          spinner.succeed(`项目创建成功： ${projectName}`)
+        }
+      })
     })
 
   program
