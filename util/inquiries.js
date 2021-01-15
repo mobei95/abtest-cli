@@ -16,13 +16,28 @@ async function chooseTemplate() {
           value: 'mock-server'
         }
       ]
+    },
+    {
+      type: "list",
+      name: 'cssModule',
+      message: '选择css模块化',
+      choices: [
+        {
+          name: 'sass/scss',
+          value: 'sass'
+        },
+        {
+          name: 'less',
+          value: 'less'
+        }
+      ]
     }
   ]
 
   const answers = await inquirer.prompt(prompList)
-  const { template } = answers
-  console.log('你选择的模板是', template)
-  return template
+  const { template, cssModule } = answers
+  console.log('你选择的模板是', template, answers)
+  return {template, cssModule}
 }
 
 module.exports = {
