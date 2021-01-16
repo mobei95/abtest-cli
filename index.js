@@ -16,7 +16,6 @@ function start() {
     .description('创建项目模板')
     .option("-T, --template [template]", "输入使用的模板名字")
     .action(async function(projectName, options) {
-      console.log('options', options)
       let template = options.template
 
       if (!template) {
