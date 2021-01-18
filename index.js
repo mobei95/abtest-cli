@@ -15,12 +15,16 @@ function start() {
   program
     .command('create [appName]')
     .description('创建项目模板')
-    // .option('--name [appName]', '输入项目名称')
+    .storeOptionsAsProperties()
+    .option('--name [appName]', '输入项目名称')
     .option('--description [appDescription]', '项目描述')
     .option('--sass', '启用sass')
     .option('--less', '启用less')
     .action(function(appName, option) {
-      console.log(appName, option)
+      console.log('appName', appName)
+      console.log('option', option)
+      console.log('name', option.name)
+      console.log('description', option.description)
       const app = new App({
         appName: appName || option.name,
         description: option.description,
