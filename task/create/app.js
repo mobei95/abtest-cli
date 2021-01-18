@@ -2,9 +2,12 @@
 
 const fs = require('fs')
 const inquirer = require('inquirer')
+const Base = require('../base')
+const templateMap = require('../../templateMap')
 
-class App {
+class App extends Base {
   constructor(options) {
+    super()
     this.conf = Object.assign({
       appName: null,
       description: '',
@@ -13,7 +16,7 @@ class App {
     }, options)
   }
 
-  talk() {
+  async talk() {
     let promptList = []
     const conf = this.conf
     // 项目名称验证
@@ -28,6 +31,21 @@ class App {
           }
           if (fs.existsSync(input)) {
             return '项目已经存在哦，换个名字吧~';
+          }
+          return true;
+        }
+      })
+    } else if (fs.existsSync(conf.appName)) {
+      promptList.push({
+        type: 'input',
+        name: 'appName',
+        message: '项目已存在，换在名字吧~',
+        validate: function(input) {
+          if (!input) {
+            return '不能为空哦，会让人家很为难的~';
+          }
+          if (fs.existsSync(input)) {
+            return '还是有同名项目哦，换个名字吧~';
           }
           return true;
         }
@@ -52,10 +70,34 @@ class App {
         }]
       })
     }
+
+    let tmpChoices = Array.from(templateMap.keys()).map(template => {
+      let {name, value} = template
+      return {name, value}
+    })
+
+    // 项目模板
+    promptList.push({
+      type: 'list',
+      name: 'template',
+      message: '选择模板',
+      choices: tmpChoices
+    })
+    const answers = await inquirer.prompt(promptList)
+    console.log('answers', answers)
+    this.write(answers)
+  }
+
+  /**
+   * 创建文件夹
+   * */
+  write(options) {
+    this.mkdir(options.appName)
   }
 
   create() {
-
+    console.log('create')
+    this.talk()
   }
 }
 

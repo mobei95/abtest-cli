@@ -22,7 +22,7 @@ function start() {
     .option('--less', '启用less')
     .action(function(appName, option) {
       console.log('appName', appName)
-      console.log('option', option)
+      // console.log('option', option)
       console.log('name', option.name)
       console.log('description', option.description)
       const app = new App({
@@ -31,7 +31,7 @@ function start() {
         sass: option.sass,
         less: option.less
       })
-      console.log('app', app)
+      app.create()
     })
 
 
