@@ -62,6 +62,11 @@ function start() {
       })
       spinner.start()
 
+      const templateMap = new Map()
+
+      templateMap.set('admin-template', 'https://github.com:mobei95/vue-default-template#master')
+      templateMap.set('empty-template', 'https://github.com:mobei95/vue-default-template#master')
+
       // 获取到模板地址并开始下载
       const downloadUrl = templateMap.get(template)
       console.log('downloadUrl', downloadUrl, template)

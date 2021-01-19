@@ -1,7 +1,10 @@
 'use strict';
 
 const fs = require('fs')
+const os = require('os')
+const path = require('path')
 const inquirer = require('inquirer')
+const download = require('download-git-repo')
 const Base = require('../base')
 const templateMap = require('../../templateMap')
 
@@ -14,6 +17,15 @@ class App extends Base {
       sass: false,
       less: false
     }, options)
+  }
+
+  /**
+   * @description 项目根目录地址
+   * @return {String}
+   * */
+  destinationRoot() {
+    const cwd = process.cwd()
+    return path.resolve(cwd, this.conf.appName || '.')
   }
 
   async talk() {
@@ -91,12 +103,67 @@ class App extends Base {
   /**
    * 创建文件夹
    * */
-  write(options) {
-    this.mkdir(options.appName)
+  write(answers) {
+    this.conf = Object.assign({
+      appName: null,
+      description: '',
+      sass: false,
+      less: false
+    }, answers)
+    const {appName, template} = answers
+    const tempPath = this.getTempPath(template)
+    this.downloadTempDir(tempPath, appName, this.writeConfig)
+  }
+
+  /**
+   * @description 获取模板地址
+   * @param {String} tempName
+   * */
+  getTempPath(tempName) {
+    const temp = Array.from(templateMap.keys()).find(item => item.value === tempName)
+    return templateMap.get(temp)
+  }
+
+  /**
+   * @description 下载模板到临时文件夹
+   * @param {String} tempPath
+   * @param {String} appName
+   * @param {Function} cb
+   * */
+  downloadTempDir(tempPath, appName, cb) {
+    download(tempPath, appName, {clone:true}, err => {
+      if (err) {
+        console.log('模板下载失败', err)
+      } else {
+        cb.apply(this)
+      }
+    })
+  }
+
+  /**
+   * @description 写入项目配置
+   * */
+  writeConfig() {
+    const conf = this.conf
+    this.configPackage()
+  }
+
+  /**
+   * @description 配置package.json
+   * */
+  configPackage() {
+    const {appName, description} = this.conf
+    const pkg = this.readFile(this.destinationRoot(), 'package.json')
+    this.writeFile(this.destinationRoot(), {
+      'package.json': JSON.stringify(Object.assign(pkg, {
+        name: appName,
+        description: description || '',
+        version: '0.1.0'
+      }), null, 2)
+    })
   }
 
   create() {
-    console.log('create')
     this.talk()
   }
 }

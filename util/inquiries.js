@@ -9,7 +9,7 @@ async function chooseTemplate() {
       choices: [
         {
           name: 'default-template（默认模板）',
-          value: 'default-template'
+          value: 'admin-template'
         },
         {
           name: 'mock-server（本地数据模拟模板）',
