@@ -5,6 +5,7 @@ const os = require('os')
 const path = require('path')
 const inquirer = require('inquirer')
 const download = require('download-git-repo')
+const handlebars = require('handlebars')
 const Base = require('../base')
 const templateMap = require('../../templateMap')
 
@@ -154,6 +155,8 @@ class App extends Base {
   configPackage() {
     const {appName, description} = this.conf
     const pkg = this.readFile(this.destinationRoot(), 'package.json')
+
+
     this.writeFile(this.destinationRoot(), {
       'package.json': JSON.stringify(Object.assign(pkg, {
         name: appName,
